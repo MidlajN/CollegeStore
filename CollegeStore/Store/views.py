@@ -1,8 +1,8 @@
 from django.contrib import messages, auth
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .models import Department, Course
-import json
+from .models import Department, Course, Order
+
 
 
 # Create your views here.
@@ -71,7 +71,36 @@ def order(request):
 
 
 def conf_order(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        dob = request.POST['dob']
+        age = request.POST['age']
+        gender = request.POST['gender']
+        phone = request.POST['phone']
+        email = request.POST['email']
+        address = request.POST['address']
+        department = request.POST['department']
+        department = Department.objects.get(id=department)
+        course = request.POST['course']
+        course = Course.objects.get(id=course)
+        purpose = request.POST['purpose']
+        material = request.POST.getlist('material[]')
+        orders = Order(
+            name=name,
+            dob=dob,
+            age=age,
+            gender=gender,
+            phone=phone,
+            email=email,
+            address=address,
+            department=department,
+            course=course,
+            purpose=purpose,
+            material=material
+        )
+        orders.save()
+        messages.info(request, 'Order Placed Successfully')
+
     depts = Department.objects.all()
     course = Course.objects.all()
-
-    return render(request, 'conforder.html', {'depts': depts, 'courses': course})
+    return render(request, 'conforder.html', {'depts': depts, 'courses': course, })
